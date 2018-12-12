@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title></title>
+    <meta name="description" content="37期js班学员作业">
+    <meta name="keywords" content="">
+    <link href="" rel="stylesheet">
+    <style>
+    </style>
+</head>
+<body>
+<div id="box"></div>
+    <input type="text" id="name">
+    <input type="text" id="age">
+    <input type="text" id="sex"><br>
+    <span id="show" class="name"></span>
+    <span class="age"></span>
+    <span class="sex"></span>
+</body>
+<script>
+    var input=document.getElementsByTagName('input');
+    var span=document.getElementsByTagName('span');
+    function defineProperty(obj, key, val) {
+        Object.defineProperty(obj,key,{
+            get: function () {
+                return val
+            },
+            set: function (newVal) {
+                val=newVal;
+                dep.notify(key);
+            }
+        })
+    }
+    function Dep() {
+        this.subs={}
+    }
+    Dep.prototype.addSub=function (sub, name) {
+        this.subs[name] = sub
+    }
+    Dep.prototype.notify=function (name) {
+        console.log(name);
+        console.log(this.subs);
+        this.subs[name].update();
+    }
+    var dep=new Dep();
+    function Watcher(vm, node, name) {
+        this.name=name;
+        this.node=node;
+        this.vm=vm;
+        this.update();
+        dep.addSub(this,name);
+    }
+    Watcher.prototype.update=function () {
+        this.value=this.vm[this.name];
+        this.node.innerHTML=this.value;
+    };
+    function name(obj) {
+        this.data=obj.data;
+        for (var key in this.data){
+            defineProperty(this,key,this.data[key])
+        }
+        var that=this;
+        for(var i=0;i<input.length;i++){
+            input[i].addEventListener('input',function (e) {
+                that[e.target.id]=e.target.value;
+                show.innerHTML=app.data.name+','+app.data.age+','+app.data.sex;
+            });
+            new Watcher(this, span[i],span[i].className);
+        }
+    }
+    var app=new name({
+        data:{
+            name:'Miley',
+            age:18,
+            sex:'female'
+        }
+    })
+</script>
+</html>

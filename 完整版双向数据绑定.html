@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title></title>
+    <meta name="description" content="37期js班学员作业">
+    <meta name="keywords" content="">
+    <link href="" rel="stylesheet">
+    <style>
+    </style>
+</head>
+<body>
+<div id="app">
+    <input type="text" v-model="name"><span>{{name}}</span>
+    <input type="text" v-model="age"><span>{{age}}</span>
+</div>
+m:模型(数据)
+v:视图(html代码)
+c:控制器(特效 业务代码 交互)
+mvc=>
+mvp=>
+mvvm=>
+
+</body>
+<script>
+    function Dep() {
+        this.subs={};
+    }
+    Dep.prototype.addSub=function (sub, name) {
+        // sub=input {{}}
+        this.subs[name]=sub;
+    }
+    function Watcher(vm, node, name) {
+        //把内容通过this的方式保存起来，添加到Dep仓库里
+        Dep.target=this;
+        this.name=name;
+        this.vm=vm;
+        this.node=node;
+        this.update();
+        Dep.target=null;
+    }
+    Watcher.prototype.update = function () {
+        this.node.innerHTML=this.vm[this.name];
+    }
+    // var Dep=(function () {
+    //     var subs={};
+    //     return {
+    //         addSub:function (value) {
+    //             subs=value
+    //         }
+    //     }
+    // }());
+    function defineReactive(vm, key, value) {
+        var dep=new Dep();
+        Object.defineProperty(vm, key, {
+            get: function () {
+                Dep.target && dep.addSub(Dep.target, key);
+                return value
+            },
+            set: function (newValue) {
+                value=newValue;
+                dep.notify(key)
+            }
+        })
+    }
+    function observe(data, vm) {
+        for(var obj in data){
+            defineReactive(vm, key, data[key])
+        }
+    }
+    // 处理dom
+    function compile(node, vm) {
+        var reg=/\{\{(.*)\}\}/;
+        var name;
+        if(node.hasAttribute('v-model')){
+            this.data=options.data;
+            observe(this.data,this);
+            name=node.getAttribute('v-model');
+            node.addEventListener('input',function (e) {
+                vm[name] = e.target.value;
+            });
+            node.value=vm[name];
+            node.removeAttribute('v-model');
+        }else if(reg.test(node.innerText)){
+            name = RegExp.$1;
+            name=name.trim();//清除左右空格
+            node.innerText=vm[name];
+            new Watcher(wm, node, name);
+        }
+    }
+    function nodeToFragment() {
+        //创建代码片段
+        var flag=document.createDocumentFragment();
+        var child;
+        while(child=node.firstChild){
+            //整理dom 把v-model之类的东西处理之后
+            compile(child, vm);
+            flag.appendChild(child);
+        }
+    }
+    function vue(options) {
+        this.data=options.data;
+        var el=document.getElementById(options.el);
+        var id=options.el;
+        var dom=nodeToFragment(document.);
+        document.getElementById(id).appendChild(dom);
+    }
+    new vue({
+        el:'#app',
+        data:{
+            name:'miley',
+            age:18
+        }
+    })
+    //1.
+    //2.
+    //3.
+
+</script>
+</html>
